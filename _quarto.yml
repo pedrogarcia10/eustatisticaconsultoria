@@ -1,0 +1,24 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  google-analytics: "G-MZCXLHBTFW"
+  title: ""
+  navbar:
+    left:
+      - href: page1.qmd
+        text: Início
+      - href: page2.qmd
+        text: Aplicações e Trabalhos
+      - href: blog.qmd
+        text: Blog
+      - href: page3.qmd
+        text: Sobre mim   
+format:
+  html:
+    lang: pt
+    theme: darkly
+    css: styles.css
+    toc: true
+

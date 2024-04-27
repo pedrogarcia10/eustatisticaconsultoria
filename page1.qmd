@@ -1,0 +1,78 @@
+---
+title: "Eustatística Consultoria"
+image: logo2.png
+about:
+  id: pags
+  template: jolla
+  links: 
+    - text: github
+      icon: github
+      href: https://github.com
+    - text: email
+      icon: envelope
+      href: mailto:pedroaugustogarcia10@gmail.com
+---
+
+## Sobre a Empresa {.justify}
+
+A Eustatística visa disseminar o poder da análise de dados, auxliando a tomar decisões mais assertivas em diversas áreas, desde o problema mais simples ao mais complexo. Fazendo isso de maneira descomplicada, em que o usuário entenda todas as etapas e soluções propostas.
+
+>Diante da abundância de dados disponíveis ou da possibilidade de coleta, temos a oportunidade de extrair insights valiosos para tomar melhores decisões.
+
+Como um breve guia da página, em [Aplicações e Trabalhos](page2.qmd) você pode conferir algumas metodologias estatísticas na prática. Na seção [Blog](blog.qmd) temos alguns posts relacionados a assuntos diversos abordando estatística fora de um contexto formal. Por fim, na página [Eu](page3.qmd) há alguns spoilers sobre mim, e fatalmente bastidores que antecedem a criação desse projeto.
+
+Dica, utilize a parte de busca para encontrar rapidamente temas do seu interesse!
+
+## Alguns serviços {.justify}
+
+Em resumo, nossa perspicácia vai desde a construção de bases de dados, passando pela criação de visuais, até a construção de modelos de IA para tomar decisões estratégicas.
+
+Logo, o conhecimento de todas etapas do processo de análise e ciência de dados são a base do nosso cardápio. Fique com uma lista de alguns pratos que podemos te oferecer:
+
+-   Auxílio em Pesquisas, Trabalhos e Exercícios Acadêmicos
+-   Técnicas Estatísticas como Testes de Hipóteses/AB, Correlações, ANOVA e Delineamentos Experimentais
+-   Aulas Particulares
+-   Planejamento, Construção e Consolidação de Bases de Dados
+-   Criação de Gráficos/Painéis/Dashboards
+-   Otimização do Desempenho em Modalidades de eSports e Esportes Tradicionais
+-   Estatística para Empresas e Pequenos Negócios (criando e consolidando bases de dados, para análise fundamentalista da empresa, pesquisa de mercado, fidelização de clientes etc)
+
+## Outras Aplicações {.justify}
+
+-   Clusterização (ex.: Segmentação de Clientes)
+-   Estatística Multivariada (ex.: Criação de Indicadores por meio de Análise de Componentes Principais)
+-   Confecção de Modelos de Aprendizado de Máquina
+-   Implementação de Sistemas de Recomendação  (Produtos, Jogos, Filmes, Séries, etc)
+-   Gamificação para Aumento de Lucro e Retenção/Satisfação de Clientes
+
+## Futuros Serviços {.justify}
+
+-   IA para Fantasy Game (Cartola FC) e Apostas Esportivas no Futebol
+-   Estatística Aplicada a Investimentos
+-   Alta Performance Pessoal com Estatística
+
+
+
+## Valores {.justify}
+
+**Precisão**: Compromisso com a precisão dos dados e análises estatísticas, assegurando que as conclusões e recomendações sejam baseadas em informações confiáveis.
+
+**Integridade**: Adesão a padrões éticos elevados, garantindo transparência, honestidade e imparcialidade em todas as fases do processo de consultoria.
+
+**Inovação**: Busca constante por métodos estatísticos avançados e tecnologias inovadoras para oferecer soluções eficazes e atualizadas aos clientes.
+
+**Confidencialidade**: Respeito à confidencialidade e segurança dos dados dos clientes, garantindo que as informações sensíveis sejam protegidas adequadamente.
+
+**Adaptação**: Capacidade de se adaptar a mudanças nas necessidades do cliente, no ambiente de negócios e nas melhores práticas estatísticas, garantindo relevância contínua.
+
+
+
+
+
+
+
+
+
+::: {#pf-heading}
+Para saber como criar um website gratuitamente como esse usando Quarto, acesse <https://quarto.org/docs/websites>.
+:::

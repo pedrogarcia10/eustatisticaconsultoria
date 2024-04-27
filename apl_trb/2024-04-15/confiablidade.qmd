@@ -1,0 +1,278 @@
+---
+title: "Por quê no brasil impera o imediatismo nas comissões técnicas de futebol?"
+author: "Pedro"
+date: 2024-04-15
+date-format: DD/MM/YYYY
+image: logo2.png
+categories: [confiabilidade, futebol, técnicos]
+description: "No futebol, especificamente no Brasil impera o imediatismo dos times em relação ao trabalho das comissões técnicas. Logo, ao decorrer de um único ano de competição muitos times acabando interrompendo o ciclo de trabalho, trocando de técnico mais de uma vez."
+language: _custom.yml
+page-break-after: always
+format:
+  html:
+   theme: darkly
+   toc: true
+   toc-location: right
+   toc-depth: 3
+   code-fold: true
+   code-summary: "Mostre o Código"
+   css: styles.css
+
+---
+
+
+# Apresentação {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+## Introdução {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+No futebol, especificamente no Brasil impera o imediatismo dos times em relação ao trabalho das comissões técnicas. Logo, ao decorrer de um único ano de competição muitos times acabando interrompendo o ciclo de trabalho, trocando de técnico mais de uma vez. E alguns dos fatores são : 
+
+- Recentes resultados ruins
+- Instatisfação da torcida
+- Estagnação do time
+- Ausência de conquistas
+- Mudanças na diretoria e presidência
+
+Sendo assim, o objetivo desse trabaho é usar conceitos de confiabilidade para identificar quais variáveis tem impacto e qual a magnitude desse impacto. Utilizando algumas variáveis de estresse relacionadas ao desempenho e perfil dos times e treinador. Os dados foram capturados do site Transfermarket, contendo o histórico desde 2000 de treinadores dos 20 times atuais da série A do campeonato brasileiro, e também do Santos que está na série B.
+
+## Objetivos {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+- Comparar adequação dos modelos Weibull e exponencial
+- Encontrar variável(is) que impacta significativamente e qual a sua magnitude
+- Interpretar mMedidas de confiabilidade` para o modelo proposto
+- Sugerir melhorias
+
+# Metodologia {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+## Carregando Pacotes e Tratando Dados {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+require(stringr)
+library(readxl)
+require(tidyr)
+require(dplyr)
+require(survival)
+require(zoo)
+require(lmtest)
+
+
+dados = data.frame(read_xlsx("TEC.xlsx",sheet = "Tabela1"))
+
+
+dados = dados[dados$Jogos >= 9,]
+
+df = data.frame(); for(i in unique(dados$Tecnico)){
+  subset= arrange(dados[dados$Tecnico == i,],Desde)
+  subset$jogos_exp = lag(cumsum(subset$Jogos))
+  subset$PPJ_exp = lag(cumsum(subset$PPJ))
+  subset$clubes = 0:(nrow(subset)-1)
+  subset$PPJ_GER = subset$PPJ_exp/subset$clubes
+  subset$JOGOS_GER = subset$jogos_exp/subset$clubes
+  df = rbind(df,subset)
+}
+
+dados = df
+
+dados$tempos = dados$Jogos
+dados$cens = ifelse(is.na(dados$Mes_Fim),0,1)
+
+dados = dados[,which(colnames(dados) %in% c('Tecnico','Time','Idade','JOGOS_GER','PPJ_GER','tempos','cens','Ano_Inicio'))]
+```
+
+## Mostrando Dados {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+Neste trabalho serão utilizadas as seguintes variáveis : Técnico (nome do treinador), Time (equipe do período de trabalho do treinador), Ano_Inicio (ano em que o treinador ingressou na equipe), Idade (idade do treinador no momento da contratação), Jogos_Ger (média de jogos disputados em equipes passadas), PPJ_Ger (média de pontos ganhos por jogo em trabalhos anteriores), PPJ (média de pontos quando saiu da equipe atual), tempos (número de jogos até a saída do treinador) e cens (são identificadas como censura se o treinador ainda está na equipe atualmente).
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+dados[sample(1:nrow(dados),size = 15),]
+```
+
+## Seleção de Variáveis {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+Em alguns testes realizados utilizando seleção de variáveis verificando a significância da contribuição de cada uma delas para os modelos Weibull e Exponencial, verifica-se que as métricas que mais contribuiram para o modelo foram PPJ_Ger e PPJ. Sendo assim, foi criada uma nova variável que é a combinação linear entre elas, onde o PPJ e PPJ_Ger tem 80% e 20%, respectivamente da contribuição final dessa variável, que será a única a ser incluída no modelo, junto com os tempos e as censuras.
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+dados$PPJ_CL = dados$PPJ*0.8+dados$PPJ_GER*0.2
+
+VARS = which(colnames(dados) %in% c('tempos','cens','PPJ_CL'))
+dados = dados[complete.cases(dados[,VARS]),]
+```
+
+## Ajuste dos Modelos {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+Weibull :
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+ajust2<-survreg(Surv(tempos,cens)~., dist='weibull',data = dados[,VARS])
+summary(ajust2)
+
+
+```
+
+Exponencial :
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+ajust1<-survreg(Surv(tempos,cens)~., dist='exponential',data = dados[,VARS])
+summary(ajust1)
+
+
+```
+
+
+## Likelihood Ratio Test {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+lmtest::lrtest(ajust2) #weibull melhor
+lmtest::lrtest(ajust1)
+
+```
+
+A partir dos p valores do TRV, rejeitamos H0 nas distribuições a um nível de significância de 5%, tendo indício de que os modelos complexos são mais adequados que os simples. Para decidir qual modelo escolher, osberva-se a magnitude do TRV, onde o weibull foi o mais satisfatório, alcancando cerca de 7.51 unidades na estatística.
+
+## Avaliação Gráfica {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+attach(dados)
+
+
+x = dados$PPJ_CL
+res1 = exp( log(tempos)-coef(ajust1)[1]-coef(ajust1)[2]*x )
+res2 = exp( (log(tempos)-coef(ajust2)[1]-coef(ajust2)[2]*x )/ ajust2$scale )
+
+ekm1<-survfit(Surv(res1,cens)~1)
+ekm2<-survfit(Surv(res2,cens)~1)
+time1<-ekm1$time
+time2<-ekm2$time 
+
+R.kp1<-ekm1$surv
+R.kp2<-ekm2$surv
+
+R.exp<- exp(-time1/1) # Se o modelo exp for adequado entaos os residuos devem ter dist. exponencial(1)
+R.Weib <- exp(-(time2/1)) # Se o modelo weibull for adequado entaos os residuos devem ter dist. weibull(1,1)
+
+
+
+par(mfrow=c(1,2))
+plot(R.kp1, R.exp, pch=16, ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "R(t): Kaplan-Meier",
+     ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(R.kp2, R.Weib, pch=16, ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "R(t): Kaplan-Meier",
+     ylab="S(t): Weibull")
+lines(c(0,1), c(0,1), type="l", lty=1)
+```
+
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+par(mfrow=c(1,2))
+plot(time1, -log(R.kp1), pch=16, xlab="tempos", ylab="-log(R(t))")
+plot(log(time2), log(-log(R.kp2)), pch=16, xlab="log(tempos)", ylab="log(-log(R(t)))")
+```
+
+Analisando os gráficos de R(t) vs S(t) e o de Linearização, percebe-se que o modelo Weibull é mais adequado.
+
+## Simulações e Medidas {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+Serão realizadas simulações considerando situações de técnicos que tiveram desempenho ruim, mediano e bom, tanto no time atual (ppj_atual) quanto no time anterior (ppj_anterior), onde vamos combinar essas situações, de modo que o técnico pode ter uma passagem ruim no time anterior e agora ele está bem, uma passagem anterior e atual medianas e entre outras situações. Para o desempenho ruim, mediano e bom os pontos por jogo (ppj) serão dados por 1.1, 1.4 e 1.8, respectivamente. Logo, a partir de todas combinações possíveis formadas poderemos estimar medidas como MTTF, tempo mediano, confiabilidade até o tempo t e intervalo de confiança.
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+ppj_atual = c(rep(1.8,3),rep(1.4,3),rep(1.1,3))
+ppj_anterior = c(1.8,1.4,1.1,1.8,1.4,1.1,1.8,1.4,1.1)
+ppj_cl = (ppj_atual*0.8)+(ppj_anterior*0.2)
+
+MTTF = c(); tp = c(); t = c(); Rt = c(); LS = c(); LI = c()
+for(i in 1:length(ppj_cl)){
+  grau = ppj_cl[i]
+  p =0.5
+  MTTF[i] = exp(coef(ajust2)[1]+coef(ajust2)[2]*grau)*gamma(1+ajust2$scale)
+  tp[i] = exp(coef(ajust2)[1]+coef(ajust2)[2]*grau)*(-log(1-p))^(ajust2$scale)
+  t[i] = 19
+  Rt[i] = round(exp(-(t/(exp(coef(ajust2)[1]+coef(ajust2)[2]*grau)))^(ajust2$scale)),4)*100
+  LS[i] = exp(log(exp(coef(ajust2)[1]+coef(ajust2)[2]*grau))+1.96*sqrt(vcov(ajust2)[1,1]+((grau^2)*vcov(ajust2)[2,2])+(2*grau*vcov(ajust2)[1,2])))
+  LI[i] = exp(log(exp(coef(ajust2)[1]+coef(ajust2)[2]*grau))-1.96*sqrt(vcov(ajust2)[1,1]+((grau^2)*vcov(ajust2)[2,2])+(2*grau*vcov(ajust2)[1,2])))
+}
+
+
+```
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+round(data.frame(ppj_atual,ppj_anterior,MTTF,tp,t,Rt,LS,LI),1)
+
+```
+
+Pela tabela, pode-se observar algumas situações bem interessantes. A primeira é que quando o treinador vem de uma passagem boa por um clube e, ele mantém as expectativas no time atual, o tempo mediano dele nesse clube é de aproximadamente 31 jogos, o tempo médio sem falhas é de cerca de 37 jogos, e o número de treinadores restantes após 19 jogo sé de aproximadamente 56.4%, e por fim é quase certo que o número de jogos desse tipo de treinador oscila em um intervalo de aproximadamente 36 a 46 jogos.
+
+Quando comparado com um outro extremo onde temos um treinador que vem de um trabalho anterior bom e atualmente mal, o MTTF é de 28.4, tempo mediano de 23.5, diminuindo cerca de 7 jogos em relação ao exemplo de técnico anterior, além disso o intervalo passa a ser de 27 a 35 jogos.
+
+Um técnico que tem tempo considerado mediano tanto no trabalho atual quanto no anterior, é quase certo que permaneça entre 30.5 e 36.3 não sendo tão diferente das demais combinações, com uma leve exceção para a primeira onde o técnico foi bem nos dois cenários.
+
+Quando comparado os intervalos de confiança dos diferentes cenários, pode-se notar que o cenário onde o técnico foi bem em ambos os contextos tem intervalo que se difere apenas dos 3 últimos apresentados na tabela, onde o técnico obteve desempenho atual ruim em todos os cenários, e variando no anterior.
+
+Evidenciando que em comparação com as demais combinações restantes, não há diferença 'significativa', mostrando que o número de jogos do comando técnico entre esses cenários não são diferentes. Logo a longevidade pode ser considerada semelhante se o técnico tem um desempenho atual mediano e bom, e um anterior bom, mediano ou ruim.
+
+
+## Conclusão {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+Em resumo o modelo escolhido foi bem satisfatório nas análises gráficas, no Likelihood Ratio Test e na seleção da variável preditora, permitindo o uso desse modelo para estimar diferentes contextos de técnicos, buscando obter estimativas de confiabilidade, entendendo o impacto que a performance tem na longevidade.
+
+
+## Melhorias {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+- Buscar e criar mais variáveis
+- Testar essas novas variáveis no modelo
+- Coletar mais dados de times da segunda divisão
+- Pegar dados de competições europeias para comparação
+
+## Referências {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
+
+-  [Transfermarket](https://www.transfermarkt.com.br/)
+-  [Gestão estratégica e confiabilidade](https://www.amazon.com.br/Estrat%C3%A9gica-Confiabilidade-Ricardo-Barusso-Lafraia/dp/8573037326)

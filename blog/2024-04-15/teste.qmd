@@ -1,0 +1,13 @@
+---
+title: "E se pudessemos ter mais experiências felizes?"
+author: "Pedro"
+date: 2024-04-15
+date-format: DD/MM/YYYY
+image: logo2.png
+categories: [músicas, experiência, sistema de recomendação, FIFA, EAFC24, futebol]
+description: "Sabe aquela sensação de escutar uma música nova e se surpreender muito com o que acabou de ouvir? É algo surreal! Existem milhões de músicas existentes e devem ser lançadas milhares todos os dias (não tenho dados pra provar rs). Agora imagine o tanto de músicas que você provavelmente amaria e não teve a oportunidade de escutar, são muitas chances de ser um pouco mais feliz todos os dias."
+language: _custom.yml
+page-break-after: always
+---
+
+*Em produção...*
