@@ -1,0 +1,22 @@
+---
+title: ""
+editor: source
+about:
+  id: pags
+  template: jolla
+  links: 
+    - text: github
+      icon: github
+      href: https://github.com
+    - text: instagram
+      icon: instagram
+      href: https://www.instagram.com/eustatistica/     
+    - text: email
+      icon: envelope
+      href: mailto:pedroaugustogarcia10@gmail.com
+---
+
+## Contato {.justify}
+
+
+Entre em contato conosco pelo direct do [Instagram](https://www.instagram.com/eustatistica/), ou então escreva para o endereço <eustatistica@gmail.com>, será um prazer te ajudar!

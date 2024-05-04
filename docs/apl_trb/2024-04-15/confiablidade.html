@@ -162,8 +162,16 @@ gtag('config', 'G-MZCXLHBTFW', { 'anonymize_ip': true});
  <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="../../conte.html">
+ <span class="menu-text">Conte-me mais!</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="../../page3.html">
- <span class="menu-text">Sobre mim</span></a>
+ <span class="menu-text">Sobre</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../page4.html">
+ <span class="menu-text">Contato</span></a>
   </li>  
 </ul>
               <div id="quarto-search" class="" title="Search"></div>
@@ -252,19 +260,19 @@ gtag('config', 'G-MZCXLHBTFW', { 'anonymize_ip': true});
 <p>No futebol, especificamente no Brasil impera o imediatismo dos times em relação ao trabalho das comissões técnicas. Logo, ao decorrer de um único ano de competição muitos times acabando interrompendo o ciclo de trabalho, trocando de técnico mais de uma vez. E alguns dos fatores são :</p>
 <ul>
 <li>Recentes resultados ruins</li>
-<li>Instatisfação da torcida</li>
+<li>Insatisfação da torcida</li>
 <li>Estagnação do time</li>
 <li>Ausência de conquistas</li>
 <li>Mudanças na diretoria e presidência</li>
 </ul>
-<p>Sendo assim, o objetivo desse trabaho é usar conceitos de confiabilidade para identificar quais variáveis tem impacto e qual a magnitude desse impacto. Utilizando algumas variáveis de estresse relacionadas ao desempenho e perfil dos times e treinador. Os dados foram capturados do site Transfermarket, contendo o histórico desde 2000 de treinadores dos 20 times atuais da série A do campeonato brasileiro, e também do Santos que está na série B.</p>
+<p>Sendo assim, o objetivo desse trabalho é usar conceitos de confiabilidade para identificar quais variáveis tem impacto e qual a magnitude desse impacto. Utilizando algumas variáveis de estresse relacionadas ao desempenho e perfil dos times e treinador. Os dados foram capturados do site Transfermarket, contendo o histórico desde 2000 de treinadores dos 20 times atuais da série A do campeonato brasileiro, e também do Santos que está na série B.</p>
 </section>
 <section id="objetivos" class="level2 smaller justify" data-background-image="fundo.jpg" data-background-opacity="0.3">
 <h2 class="smaller justify anchored" data-background-image="fundo.jpg" data-background-opacity="0.3" data-anchor-id="objetivos">Objetivos</h2>
 <ul>
 <li>Comparar adequação dos modelos Weibull e exponencial</li>
 <li>Encontrar variável(is) que impacta significativamente e qual a sua magnitude</li>
-<li>Interpretar mMedidas de confiabilidade` para o modelo proposto</li>
+<li>Interpretar Medidas de confiabilidade para o modelo proposto</li>
 <li>Sugerir melhorias</li>
 </ul>
 </section>
@@ -318,22 +326,22 @@ gtag('config', 'G-MZCXLHBTFW', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dados[<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(dados),<span class="at">size =</span> <span class="dv">15</span>),]</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>                 Tecnico Time Idade Ano_Inicio  PPJ_GER JOGOS_GER tempos cens
-279       Estevam Soares  BOT    53       2009 1.560000   9.00000     27    1
-509   Givanildo Oliveira  CAP    57       2006       NA        NA     12    1
-132       Rafael Dudamel  CAM    47       2020       NA        NA     10    1
-486      Wesley Carvalho  CAP    49       2023       NA        NA     30    1
-21          Rogério Ceni  FLA    47       2020 1.596667  43.66667     46    1
-252           Zé Ricardo  INT    48       2019 1.682500  32.75000     11    1
-564      Roberval Davino  FOR    51       2006       NA        NA     13    1
-560              Pintado  CUI    56       2022 1.605000  29.50000     21    1
-129       Jorge Sampaoli  SAN    58       2018       NA        NA     48    1
-145       Vagner Mancini  GRE    55       2021 1.346667  31.33333     20    1
-254           Zé Ricardo  CRU    52       2023 1.635000  27.83333     10    1
-481                Jairo  AGO    37       2012       NA        NA     17    1
-231     Enderson Moreira  BAH    50       2022 1.445455  34.81818     18    1
-403  Antônio Carlos Zago  RBB    49       2019 1.346667  17.33333     37    1
-182 Vanderlei Luxemburgo  PAL    67       2020 1.558333  43.50000     36    1</code></pre>
+<pre><code>                   Tecnico Time Idade Ano_Inicio  PPJ_GER JOGOS_GER tempos cens
+348     Paulo César Gusmão  CRU    43       2005       NA        NA     52    1
+355          Renato Gaúcho  VAS    42       2005       NA        NA     71    1
+155          Roger Machado  GRE    40       2015       NA        NA     74    1
+97  Paulo César Carpegiani  VIT    60       2009 1.230000  22.00000     18    1
+152            Levir Culpi  CAM    65       2018 1.592500  43.75000     17    1
+598          Glauber Ramos  GOI    NA       2021 1.180000  34.00000     15    1
+53           Ricardo Gomes SPFC    44       2009 1.670000   9.00000     56    1
+117    Luiz Felipe Scolari  CRU    51       2000       NA        NA      9    1
+238        Eduardo Barroca  VIT    38       2020 1.450000  19.00000      9    1
+560                Pintado  CUI    56       2022 1.605000  29.50000     21    1
+191             Celso Roth  GRE    50       2008 1.326000  21.40000     43    1
+108    Oswaldo de Oliveira  BOT    61       2012 1.690000  17.00000     89    1
+283           Mano Menezes SCCP    45       2008 1.600000  90.00000     59    1
+512     Givanildo Oliveira  AMM    70       2018 1.413333  40.66667      9    1
+269            Caio Júnior  BOT    46       2011 1.605000  38.00000     39    1</code></pre>
 </div>
 </div>
 </section>
@@ -438,7 +446,7 @@ Model 2: Surv(tempos, cens) ~ 1
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
-<p>A partir dos p valores do TRV, rejeitamos H0 nas distribuições a um nível de significância de 5%, tendo indício de que os modelos complexos são mais adequados que os simples. Para decidir qual modelo escolher, osberva-se a magnitude do TRV, onde o weibull foi o mais satisfatório, alcancando cerca de 7.51 unidades na estatística.</p>
+<p>A partir dos p valores do TRV, rejeitamos H0 nas distribuições a um nível de significância de 5%, tendo indício de que os modelos complexos são mais adequados que os simples. Para decidir qual modelo escolher, observa-se a magnitude do TRV, onde o weibull foi o mais satisfatório, alcançando cerca de 7.51 unidades na estatística.</p>
 </section>
 <section id="avaliação-gráfica" class="level2 smaller justify" data-background-image="fundo.jpg" data-background-opacity="0.3">
 <h2 class="smaller justify anchored" data-background-image="fundo.jpg" data-background-opacity="0.3" data-anchor-id="avaliação-gráfica">Avaliação Gráfica</h2>
@@ -500,7 +508,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </section>
 <section id="simulações-e-medidas" class="level2 smaller justify" data-background-image="fundo.jpg" data-background-opacity="0.3">
 <h2 class="smaller justify anchored" data-background-image="fundo.jpg" data-background-opacity="0.3" data-anchor-id="simulações-e-medidas">Simulações e Medidas</h2>
-<p>Serão realizadas simulações considerando situações de técnicos que tiveram desempenho ruim, mediano e bom, tanto no time atual (ppj_atual) quanto no time anterior (ppj_anterior), onde vamos combinar essas situações, de modo que o técnico pode ter uma passagem ruim no time anterior e agora ele está bem, uma passagem anterior e atual medianas e entre outras situações. Para o desempenho ruim, mediano e bom os pontos por jogo (ppj) serão dados por 1.1, 1.4 e 1.8, respectivamente. Logo, a partir de todas combinações possíveis formadas poderemos estimar medidas como MTTF, tempo mediano, confiabilidade até o tempo t e intervalo de confiança.</p>
+<p>Serão realizadas simulações considerando situações de técnicos que tiveram desempenho ruim, mediano e bom, tanto no time atual (ppj_atual) quanto no time anterior (ppj_anterior), onde vamos combinar essas situações, de modo que o técnico pode ter uma passagem ruim no time anterior e agora ele está bem, uma passagem anterior e atual medianas e entre outras situações. Para o desempenho ruim, mediano e bom os pontos por jogo (ppj) serão dados por 1.1, 1.4 e 1.8, respectivamente. Logo, a partir de todas as combinações possíveis formadas poderemos estimar medidas como MTTF, tempo mediano, confiabilidade até o tempo t e intervalo de confiança.</p>
 <div class="cell" data-layout-align="center">
 <details>
 <summary>Mostre o Código</summary>
@@ -542,7 +550,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p>Pela tabela, pode-se observar algumas situações bem interessantes. A primeira é que quando o treinador vem de uma passagem boa por um clube e, ele mantém as expectativas no time atual, o tempo mediano dele nesse clube é de aproximadamente 31 jogos, o tempo médio sem falhas é de cerca de 37 jogos, e o número de treinadores restantes após 19 jogo sé de aproximadamente 56.4%, e por fim é quase certo que o número de jogos desse tipo de treinador oscila em um intervalo de aproximadamente 36 a 46 jogos.</p>
 <p>Quando comparado com um outro extremo onde temos um treinador que vem de um trabalho anterior bom e atualmente mal, o MTTF é de 28.4, tempo mediano de 23.5, diminuindo cerca de 7 jogos em relação ao exemplo de técnico anterior, além disso o intervalo passa a ser de 27 a 35 jogos.</p>
 <p>Um técnico que tem tempo considerado mediano tanto no trabalho atual quanto no anterior, é quase certo que permaneça entre 30.5 e 36.3 não sendo tão diferente das demais combinações, com uma leve exceção para a primeira onde o técnico foi bem nos dois cenários.</p>
-<p>Quando comparado os intervalos de confiança dos diferentes cenários, pode-se notar que o cenário onde o técnico foi bem em ambos os contextos tem intervalo que se difere apenas dos 3 últimos apresentados na tabela, onde o técnico obteve desempenho atual ruim em todos os cenários, e variando no anterior.</p>
+<p>Quando comparado os intervalos de confiança dos diferentes cenários, pode-se notar que o cenário onde o técnico foi bem em ambos os contextos têm intervalo que se difere apenas dos 3 últimos apresentados na tabela, onde o técnico obteve desempenho atual ruim em todos os cenários, e variando no anterior.</p>
 <p>Evidenciando que em comparação com as demais combinações restantes, não há diferença ‘significativa’, mostrando que o número de jogos do comando técnico entre esses cenários não são diferentes. Logo a longevidade pode ser considerada semelhante se o técnico tem um desempenho atual mediano e bom, e um anterior bom, mediano ou ruim.</p>
 </section>
 <section id="conclusão" class="level2 smaller justify" data-background-image="fundo.jpg" data-background-opacity="0.3">

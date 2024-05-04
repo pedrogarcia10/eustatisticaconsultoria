@@ -1,0 +1,15 @@
+---
+title: "O que é a Clusterização?"
+author: "Pedro Garcia"
+image: logo2.png
+categories: [estatística, análise multivariada,agrupamentos,clusterização]
+description: ""
+language: _custom.yml
+page-break-after: always
+---
+
+# Resumo {.justify}
+
+A clusterização é um método estatístico que visa criar grupos de elementos (ex.: clientes, filmes, países etc) a partir de suas respectivas características/variáveis (ex.: quantidade de produtos comprados, gênero do filme, avaliação do filme, qualidade de vida, PIB etc). De modo que dentro de cada grupo os elementos sejam parecidos entre si, e entre os grupos eles sejam diferentes.
+
+Para realizar o método é necessário utilizar alguma medida de similaridade (ex.: distância entre pontos como a euclidiana, correlação etc) para estimar a semelhança entre os elementos. Após calculada a distância entre os elementos, são propostos vários métodos de agrupamentos hierárquicos ou não-hierárquicos para formar os grupos.

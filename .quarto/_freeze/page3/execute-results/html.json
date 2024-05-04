@@ -1,0 +1,16 @@
+{
+  "hash": "7c619274575426304b97e0b3c4a43aad",
+  "result": {
+    "markdown": "---\ntitle: \"Sobre mim\"\neditor: source\nabout:\n  id: pags\n  template: jolla\n  links: \n    - text: github\n      icon: github\n      href: https://github.com\n    - text: instagram\n      icon: instagram\n      href: https://www.instagram.com/eustatistica/     \n    - text: email\n      icon: envelope\n      href: mailto:pedroaugustogarcia10@gmail.com\n---\n\n\n## {.justify}\n\nAntes de tudo, uma conta rápida.\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[1] 2\n```\n:::\n:::\n\n\nMeu nome é Pedro Garcia, sou fascinado por estatística desde criança, quando folheava a revista Placar procurando cada nuance dos números do futebol. Isso antes mesmo de saber o real significado de estatística. No qual me conscientizei somente aos 17 anos de idade, mas ainda sem saber o verdadeiro potencial dessa área, que descubro um pouco mais constantemente.\n\nAlém disso, sou muito curioso, e se há algum tema que dê pra ser trabalhado com estatística, já tem meu interesse. Particularmente, gosto muito de Futebol, Esportes Eletrônicos, Música, Cinema, Gastronomia e Aprendizado Acelerado. E, a todo tempo tento unir esses hobbies com Estatística, buscando aperfeiçoar meus conhecimentos e inovar.\n\nAo ingressar no curso de Bachalerado em Estatística na UFU (Universidade Federal Uberlândia) meu objetivo era me tornar Analista de Desempenho no Futebol, unindo minhas duas grandes paixões.\n\nPorém durante o percurso algumas situações me levaram a outro caminho, onde uni minha perspicácia em Jogos com Estatística, me tornando um Analista de Desempenho em eSports. No qual atuo até os dias atuais, vestindo a camisa de grandes equipes, iniciando na [LOUD](https://www.instagram.com/loudgg/) (2021-2022), e com passagens pela [Team Liquid](https://www.instagram.com/teamliquidbr/) (2022-2023,2024), [Vivo Keyd](https://www.instagram.com/vivokeyd/) (2023) e [Fluxo](https://www.instagram.com/fluxogg/) (2023).\n\nAprofundando na área acadêmica, tive experiências como Monitor em algumas disciplinas, além de integrar um grupo denominado PET (Programa de Ensino Tutorial) que é encarregado de realizar atividades de ensino, pesquisa e extensão, dentro e fora da universidade. Assim, tive a oportunidade de contribuir na organização de eventos, realizar pesquisar individuais e coletivas, além de elaborar e ministrar minicursos.\n\nAtualmente, estou finalizando o curso de Estatística, faltando apenas a TCC. No qual traz um tema que corresponde muito com a minha trajetória no cenário de eSports, abordando a modalidade League of Legends (LoL). Além disso, já almejo a oportunidade de Mestrado na área de Inteligência Artificial.",
+    "supporting": [
+      "page3_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

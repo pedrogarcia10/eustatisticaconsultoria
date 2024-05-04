@@ -1,0 +1,38 @@
+{
+  "page1.qmd": {
+    "page1.html": "7b64697d"
+  },
+  "page2.qmd": {
+    "page2.html": "04d9eeab"
+  },
+  "page3.qmd": {
+    "page3.html": "a3901044"
+  },
+  "blog/2024-04-15/index.qmd": {
+    "index.html": "5375e284"
+  },
+  "blog.qmd": {
+    "blog.html": "14d2f1de"
+  },
+  "blog/2024-04-15/teste.qmd": {
+    "teste.html": "710e31fb"
+  },
+  "apl_trb/2024-04-15/confiablidade.qmd": {
+    "confiablidade.html": "e593d0cf"
+  },
+  "apl_trb/2024-04-15/APR_TRB_CONF.qmd": {
+    "APR_TRB_CONF.html": "8870af43"
+  },
+  "page4.qmd": {
+    "page4.html": "3fcd2b44"
+  },
+  "conte.qmd": {
+    "conte.html": "9a0069b4"
+  },
+  "conte/clusterizacao/clusterizacao.qmd": {
+    "clusterizacao.html": "3af1cfbc"
+  },
+  "blog/2024-05-03/cv.qmd": {
+    "cv.html": "9703b8b3"
+  }
+}

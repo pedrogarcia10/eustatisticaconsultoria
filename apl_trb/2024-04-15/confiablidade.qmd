@@ -28,18 +28,18 @@ format:
 No futebol, especificamente no Brasil impera o imediatismo dos times em relação ao trabalho das comissões técnicas. Logo, ao decorrer de um único ano de competição muitos times acabando interrompendo o ciclo de trabalho, trocando de técnico mais de uma vez. E alguns dos fatores são : 
 
 - Recentes resultados ruins
-- Instatisfação da torcida
+- Insatisfação da torcida
 - Estagnação do time
 - Ausência de conquistas
 - Mudanças na diretoria e presidência
 
-Sendo assim, o objetivo desse trabaho é usar conceitos de confiabilidade para identificar quais variáveis tem impacto e qual a magnitude desse impacto. Utilizando algumas variáveis de estresse relacionadas ao desempenho e perfil dos times e treinador. Os dados foram capturados do site Transfermarket, contendo o histórico desde 2000 de treinadores dos 20 times atuais da série A do campeonato brasileiro, e também do Santos que está na série B.
+Sendo assim, o objetivo desse trabalho é usar conceitos de confiabilidade para identificar quais variáveis tem impacto e qual a magnitude desse impacto. Utilizando algumas variáveis de estresse relacionadas ao desempenho e perfil dos times e treinador. Os dados foram capturados do site Transfermarket, contendo o histórico desde 2000 de treinadores dos 20 times atuais da série A do campeonato brasileiro, e também do Santos que está na série B.
 
 ## Objetivos {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
 
 - Comparar adequação dos modelos Weibull e exponencial
 - Encontrar variável(is) que impacta significativamente e qual a sua magnitude
-- Interpretar mMedidas de confiabilidade` para o modelo proposto
+- Interpretar Medidas de confiabilidade para o modelo proposto
 - Sugerir melhorias
 
 # Metodologia {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
@@ -157,7 +157,7 @@ lmtest::lrtest(ajust1)
 
 ```
 
-A partir dos p valores do TRV, rejeitamos H0 nas distribuições a um nível de significância de 5%, tendo indício de que os modelos complexos são mais adequados que os simples. Para decidir qual modelo escolher, osberva-se a magnitude do TRV, onde o weibull foi o mais satisfatório, alcancando cerca de 7.51 unidades na estatística.
+A partir dos p valores do TRV, rejeitamos H0 nas distribuições a um nível de significância de 5%, tendo indício de que os modelos complexos são mais adequados que os simples. Para decidir qual modelo escolher, observa-se a magnitude do TRV, onde o weibull foi o mais satisfatório, alcançando cerca de 7.51 unidades na estatística.
 
 ## Avaliação Gráfica {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
 
@@ -212,7 +212,7 @@ Analisando os gráficos de R(t) vs S(t) e o de Linearização, percebe-se que o 
 
 ## Simulações e Medidas {.smaller background-image="fundo.jpg" background-opacity=0.3 .justify}
 
-Serão realizadas simulações considerando situações de técnicos que tiveram desempenho ruim, mediano e bom, tanto no time atual (ppj_atual) quanto no time anterior (ppj_anterior), onde vamos combinar essas situações, de modo que o técnico pode ter uma passagem ruim no time anterior e agora ele está bem, uma passagem anterior e atual medianas e entre outras situações. Para o desempenho ruim, mediano e bom os pontos por jogo (ppj) serão dados por 1.1, 1.4 e 1.8, respectivamente. Logo, a partir de todas combinações possíveis formadas poderemos estimar medidas como MTTF, tempo mediano, confiabilidade até o tempo t e intervalo de confiança.
+Serão realizadas simulações considerando situações de técnicos que tiveram desempenho ruim, mediano e bom, tanto no time atual (ppj_atual) quanto no time anterior (ppj_anterior), onde vamos combinar essas situações, de modo que o técnico pode ter uma passagem ruim no time anterior e agora ele está bem, uma passagem anterior e atual medianas e entre outras situações. Para o desempenho ruim, mediano e bom os pontos por jogo (ppj) serão dados por 1.1, 1.4 e 1.8, respectivamente. Logo, a partir de todas as  combinações possíveis formadas poderemos estimar medidas como MTTF, tempo mediano, confiabilidade até o tempo t e intervalo de confiança.
 
 ```{r}
 #| fig-align: center
@@ -255,7 +255,7 @@ Quando comparado com um outro extremo onde temos um treinador que vem de um trab
 
 Um técnico que tem tempo considerado mediano tanto no trabalho atual quanto no anterior, é quase certo que permaneça entre 30.5 e 36.3 não sendo tão diferente das demais combinações, com uma leve exceção para a primeira onde o técnico foi bem nos dois cenários.
 
-Quando comparado os intervalos de confiança dos diferentes cenários, pode-se notar que o cenário onde o técnico foi bem em ambos os contextos tem intervalo que se difere apenas dos 3 últimos apresentados na tabela, onde o técnico obteve desempenho atual ruim em todos os cenários, e variando no anterior.
+Quando comparado os intervalos de confiança dos diferentes cenários, pode-se notar que o cenário onde o técnico foi bem em ambos os contextos têm intervalo que se difere apenas dos 3 últimos apresentados na tabela, onde o técnico obteve desempenho atual ruim em todos os cenários, e variando no anterior.
 
 Evidenciando que em comparação com as demais combinações restantes, não há diferença 'significativa', mostrando que o número de jogos do comando técnico entre esses cenários não são diferentes. Logo a longevidade pode ser considerada semelhante se o técnico tem um desempenho atual mediano e bom, e um anterior bom, mediano ou ruim.
 

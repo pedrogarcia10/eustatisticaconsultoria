@@ -1,0 +1,15 @@
+---
+title: "Conte-me mais!"
+listing:
+  contents: conte
+  type: default
+  categories: true
+  fields: [image, description, title, categories]
+language: _custom.yml
+page-layout: full
+title-block-banner: true
+listing-page-category-all: "Tudo"
+toc-title-website: ""
+lang: pt-br
+css: styles.css
+---

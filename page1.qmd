@@ -8,14 +8,17 @@ about:
     - text: github
       icon: github
       href: https://github.com
+    - text: instagram
+      icon: instagram
+      href: https://www.instagram.com/eustatistica/     
     - text: email
       icon: envelope
-      href: mailto:pedroaugustogarcia10@gmail.com
+      href: mailto:eustatistica@gmail.com
 ---
 
 ## Sobre a Empresa {.justify}
 
-A Eustatística visa disseminar o poder da análise de dados, auxliando a tomar decisões mais assertivas em diversas áreas, desde o problema mais simples ao mais complexo. Fazendo isso de maneira descomplicada, em que o usuário entenda todas as etapas e soluções propostas.
+A Eustatística visa disseminar o poder da análise de dados, auxiliando a tomar decisões mais assertivas em diversas áreas, desde o problema mais simples ao mais complexo. Fazendo isso de maneira descomplicada, em que o usuário entenda todas as etapas e soluções propostas.
 
 >Diante da abundância de dados disponíveis ou da possibilidade de coleta, temos a oportunidade de extrair insights valiosos para tomar melhores decisões.
 
@@ -27,7 +30,7 @@ Dica, utilize a parte de busca para encontrar rapidamente temas do seu interesse
 
 Em resumo, nossa perspicácia vai desde a construção de bases de dados, passando pela criação de visuais, até a construção de modelos de IA para tomar decisões estratégicas.
 
-Logo, o conhecimento de todas etapas do processo de análise e ciência de dados são a base do nosso cardápio. Fique com uma lista de alguns pratos que podemos te oferecer:
+Logo, o conhecimento de todas as etapas do processo de análise e ciência de dados são a base do nosso cardápio. Fique com uma lista de alguns pratos que podemos te oferecer:
 
 -   Auxílio em Pesquisas, Trabalhos e Exercícios Acadêmicos
 -   Técnicas Estatísticas como Testes de Hipóteses/AB, Correlações, ANOVA e Delineamentos Experimentais
@@ -35,14 +38,14 @@ Logo, o conhecimento de todas etapas do processo de análise e ciência de dados
 -   Planejamento, Construção e Consolidação de Bases de Dados
 -   Criação de Gráficos/Painéis/Dashboards
 -   Otimização do Desempenho em Modalidades de eSports e Esportes Tradicionais
--   Estatística para Empresas e Pequenos Negócios (criando e consolidando bases de dados, para análise fundamentalista da empresa, pesquisa de mercado, fidelização de clientes etc)
+-   Estatística para Empresas e Pequenos Negócios (criando e consolidando bases de dados, para análise fundamentalista da empresa, pesquisa de mercado, fidelização de clientes etc.)
 
 ## Outras Aplicações {.justify}
 
--   Clusterização (ex.: Segmentação de Clientes)
+-   [Clusterização](conte/clusterizacao/clusterizacao.qmd) (ex.: Segmentação de Clientes)
 -   Estatística Multivariada (ex.: Criação de Indicadores por meio de Análise de Componentes Principais)
 -   Confecção de Modelos de Aprendizado de Máquina
--   Implementação de Sistemas de Recomendação  (Produtos, Jogos, Filmes, Séries, etc)
+-   Implementação de Sistemas de Recomendação  (Produtos, Jogos, Filmes, Séries, etc,)
 -   Gamificação para Aumento de Lucro e Retenção/Satisfação de Clientes
 
 ## Futuros Serviços {.justify}
@@ -64,8 +67,6 @@ Logo, o conhecimento de todas etapas do processo de análise e ciência de dados
 **Confidencialidade**: Respeito à confidencialidade e segurança dos dados dos clientes, garantindo que as informações sensíveis sejam protegidas adequadamente.
 
 **Adaptação**: Capacidade de se adaptar a mudanças nas necessidades do cliente, no ambiente de negócios e nas melhores práticas estatísticas, garantindo relevância contínua.
-
-
 
 
 

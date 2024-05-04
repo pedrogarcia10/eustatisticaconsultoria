@@ -13,8 +13,12 @@ website:
         text: Aplicações e Trabalhos
       - href: blog.qmd
         text: Blog
+      - href: conte.qmd
+        text: Conte-me mais!
       - href: page3.qmd
-        text: Sobre mim   
+        text: Sobre
+      - href: page4.qmd
+        text: Contato          
 format:
   html:
     lang: pt
