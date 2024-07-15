@@ -1,5 +1,5 @@
 ---
-title: "Eustatística Consultoria"
+title: "Eustatística Startup"
 image: logo2.png
 about:
   id: pags
