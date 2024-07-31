@@ -1,0 +1,696 @@
+---
+title: "Olimpíadas e Estatísticas"
+author: "Pedro Garcia"
+date: 2024-07-24
+date-format: DD/MM/YYYY
+image: logo2.png
+categories: [esportes, olimpíadas, gráficos, análise de dados, países, ggplot, dplyr]
+description: ""
+language: _custom.yml
+page-break-after: always
+format:
+  html:
+   theme: darkly
+   toc: true
+   toc-location: right
+   toc-depth: 3
+   code-fold: true
+   code-summary: "Mostre o Código"
+   css: styles.css
+
+---
+
+
+
+
+
+# Introdução {.justify}
+
+Quando criança, lembro-me de assistir às Olimpíadas sem entender muito bem seu real impacto. Todos aqueles esportes diferentes, cujas regras eu não conhecia direito, traziam novas descobertas. A cerimônia de abertura, então, me encantava muito; ver todas aquelas bandeiras (talvez ali tenha adquirido um fascínio imediato por bandeiras que perdura até hoje) e toda aquela diversidade cultural era realmente muito interessante!
+
+Naquela época, eu não era tão fascinado por futebol, esporte que se tornaria meu hiperfoco até os dias atuais. Mas aquele meu encantamento pelos países e suas particularidades ainda se mantém, com uma ênfase maior no contexto futebolístico.
+
+Hoje, em um período olímpico, revisito esses sentimentos da infância usando estatística. Adentrarei ainda mais nas particularidades desse megaevento a partir de uma base de dados histórica do quadro de medalhas, respondendo perguntas como: quais são os países com maior desempenho por esporte? Quais países têm maior integração de mulheres? No geral, quais são as nações que dominam as competições?
+
+Um fator importante é que nossa análise será apenas das competições que aconteceram neste século, incluindo Olimpíadas de inverno e verão.
+
+
+
+# Tratamento dos Dados {.justify}
+
+### Carregando os Pacotes {.justify}
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+
+require(dplyr) 
+require(tidyr) 
+require(ggplot2) 
+library(dplyr) 
+library(countrycode) 
+library(ggplot2) 
+require(DT)
+
+```
+
+
+### Carregando e Pré-Visualizando os Dados {.justify}
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+dados = read.csv(file = 'dataset_olympics.csv',header = T) # Carrega os dados do arquivo CSV
+noc = read.csv(file = 'noc_region.csv',header = T) # Carrega os dados do arquivo CSV
+#str(dados) # Mostra a estrutura dos dados
+# Exibe as primeiras 10 linhas dos dados como uma tabela dinâmica com estilo personalizado
+datatable(
+  dados[sample(1:nrow(dados),100),],
+  options = list(
+    pageLength = 10, 
+    autoWidth = TRUE,
+    columnDefs = list(
+      list(targets = '_all', className = 'dt-center'),  # Centraliza os dados
+      list(targets = '_all', render = JS(
+        "function(data, type, row, meta) {",
+        "return '<span style=\"font-size:14px;\">' + data + '</span>';",
+        "}"))
+    ),
+    scrollX = TRUE  # Adiciona barra de rolagem horizontal se necessário
+  ),
+  rownames = FALSE,
+  class = 'cell-border stripe',
+  style = "bootstrap",
+  callback = JS(
+    "table.on('draw.dt', function() {",
+    "$('table.dataTable').css({'background-color': 'black', 'color': 'white'});",
+    "$('table.dataTable thead th').css({'background-color': '#333', 'color': 'white'});",
+    "$('table.dataTable tfoot th').css({'background-color': '#333', 'color': 'white'});",
+    "$('table.dataTable tbody tr').css({'background-color': 'black', 'color': 'white'});",
+    "$('table.dataTable tbody tr:hover').css({'background-color': '#444', 'color': 'white'});",
+    "});"
+  )
+)
+
+```
+
+
+### Transformando os Dados {.justify}
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+
+dados$Medal = ifelse(dados$Medal == '','Null',dados$Medal) # Substitui valores vazios em Medal por 'Null'
+
+dados$aux = 1 # Cria uma coluna auxiliar com valor 1
+
+dados = dados |> 
+  pivot_wider(names_from = c(Medal),values_from = aux,values_fn = sum,values_fill = 0) |> # Transforma os dados em formato wide
+  as.data.frame() # Converte para data frame
+
+
+```
+
+
+### Visualizando os esportes {.justify}
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+#unique(dados$Sport) # Mostra os valores únicos da coluna Sport
+wc = as.data.frame(table(unique(dados$Sport)))
+wordcloud2::wordcloud2(data = wc,size = 0.15,
+  color = 'random-light',
+  backgroundColor = 'black')
+```
+
+### Criação de Variáveis {.justify}
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+sel1 = dados |> 
+  filter(Year >= 2000) |> # Filtra os dados para o ano 2000 ou posterior
+  group_by(NOC) |> # Agrupa por NOC
+  summarise(
+    ger_mdl_ouro = sum(Gold), # Soma as medalhas de ouro
+    ger_mdl_prata = sum(Silver), # Soma as medalhas de prata
+    ger_mdl_bronze = sum(Bronze), # Soma as medalhas de bronze
+    ger_mdl_ausente = sum(Null), # Soma as medalhas ausentes
+    ger_mdl_tot = ger_mdl_ouro + ger_mdl_prata + ger_mdl_bronze, # Calcula o total de medalhas
+    ger_mdl_score = (ger_mdl_ouro * 0.5) + (ger_mdl_prata * 0.2) + (ger_mdl_bronze * 0.1), # Calcula o score de medalhas
+    ger_mdl_aproveitamento = (ger_mdl_tot) / ((ger_mdl_tot) + (ger_mdl_ausente)), # Calcula o aproveitamento de medalhas
+    ger_esportes_diferentes = n_distinct(Sport), # Conta esportes diferentes
+    ger_modalidades_diferentes =  n_distinct(Event), # Conta modalidades diferentes
+    ger_mediana_idade = median(Age,na.rm = T), # Calcula a mediana da idade
+    ger_qtd_atletas_m = sum(ifelse(Sex == 'M',1,0),na.rm = T), # Conta atletas do sexo masculino
+    ger_qtd_atletas_f = sum(ifelse(Sex == 'F',1,0),na.rm = T), # Conta atletas do sexo feminino
+    ger_prop_f = ger_qtd_atletas_f/(ger_qtd_atletas_m+ger_qtd_atletas_f) # Calcula a proporção de atletas femininas
+  ) |> 
+  ungroup() |> # Desagrupa os dados
+  mutate(across(where(is.numeric), ~ rank(-.x), .names = "rank_{col}")) |> # Aplica ranking às colunas numéricas
+  as.data.frame() |> # Converte para data frame
+  arrange(-ger_mdl_score) # Ordena pelo score de medalhas
+
+
+
+
+sel2 = dados |> 
+  filter(Year >= 2000) |> # Filtra os dados para o ano 2000 ou posterior
+  group_by(NOC,Sport) |> # Agrupa por NOC e Sport
+  summarise(
+    mdl_ouro = sum(Gold), # Soma as medalhas de ouro
+    mdl_prata = sum(Silver), # Soma as medalhas de prata
+    mdl_bronze = sum(Bronze), # Soma as medalhas de bronze
+    mdl_ausente = sum(Null), # Soma as medalhas ausentes
+    mdl_tot = mdl_ouro+mdl_prata+mdl_bronze, # Calcula o total de medalhas
+    mdl_score = (mdl_ouro*0.5)+(mdl_prata*0.2)+(mdl_bronze*0.1), # Calcula o score de medalhas
+    esportes_diferentes = n_distinct(Sport), # Conta esportes diferentes
+    modalidades_diferentes =  n_distinct(Event), # Conta modalidades diferentes
+    mediana_idade = median(Age,na.rm = T), # Calcula a mediana da idade
+    qtd_atletas_m = sum(ifelse(Sex == 'M',1,0),na.rm = T), # Conta atletas do sexo masculino
+    qtd_atletas_f = sum(ifelse(Sex == 'F',1,0),na.rm = T), # Conta atletas do sexo feminino
+    prop_f = qtd_atletas_f/(qtd_atletas_m+qtd_atletas_f) # Calcula a proporção de atletas femininas
+  ) |> 
+  group_by(Sport) |> # Agrupa por Sport
+  mutate(across(where(is.numeric), ~ rank(-.x), .names = "rank_{col}")) |> # Aplica ranking às colunas numéricas
+  as.data.frame() |> # Converte para data frame
+  arrange(-mdl_score) |> # Ordena pelo score de medalhas
+  ungroup() # Desagrupa os dados
+
+
+
+
+sel = merge(sel2,sel1,all.x = T,by = c('NOC')) # Faz o merge dos dados por NOC
+sel = merge(sel,noc,by.x = 'NOC',by.y = 'noc_region',all.x = T) # Faz o merge com a base de dados NOC
+sel$prop_mdl_p_esporte = sel$mdl_tot/sel$ger_mdl_tot # Calcula a proporção de medalhas por esporte
+
+
+sel_ano = dados |> 
+  filter(Year >= 2000) |> # Filtra os dados para o ano 2000 ou posterior
+  group_by(NOC,Year) |> # Agrupa por NOC e Year
+  summarise(
+    ger_mdl_ouro = sum(Gold), # Soma as medalhas de ouro
+    ger_mdl_prata = sum(Silver), # Soma as medalhas de prata
+    ger_mdl_bronze = sum(Bronze), # Soma as medalhas de bronze
+    ger_mdl_ausente = sum(Null), # Soma as medalhas ausentes
+    ger_mdl_tot = ger_mdl_ouro + ger_mdl_prata + ger_mdl_bronze, # Calcula o total de medalhas
+    ger_mdl_score = (ger_mdl_ouro * 0.5) + (ger_mdl_prata * 0.2) + (ger_mdl_bronze * 0.1), # Calcula o score de medalhas
+    ger_mdl_aproveitamento = (ger_mdl_tot) / ((ger_mdl_tot) + (ger_mdl_ausente)), # Calcula o aproveitamento de medalhas
+    ger_esportes_diferentes = n_distinct(Sport), # Conta esportes diferentes
+    ger_modalidades_diferentes =  n_distinct(Event), # Conta modalidades diferentes
+    ger_mediana_idade = median(Age,na.rm = T), # Calcula a mediana da idade
+    ger_qtd_atletas_m = sum(ifelse(Sex == 'M',1,0),na.rm = T), # Conta atletas do sexo masculino
+    ger_qtd_atletas_f = sum(ifelse(Sex == 'F',1,0),na.rm = T), # Conta atletas do sexo feminino
+    ger_prop_f = ger_qtd_atletas_f/(ger_qtd_atletas_m+ger_qtd_atletas_f) # Calcula a proporção de atletas femininas
+  ) |> 
+  ungroup() |> # Desagrupa os dados
+  mutate(across(where(is.numeric), ~ rank(-.x), .names = "rank_{col}")) |> # Aplica ranking às colunas numéricas
+  as.data.frame() |> # Converte para data frame
+  arrange(-ger_mdl_score) # Ordena pelo score de medalhas
+
+
+```
+
+# Visualização de Dados {.justify}
+
+### Quais os países que mais dominam as olímpiadas no quadro de medalhas? {.justify}
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+
+{
+visual = sel |> 
+  filter(rank_ger_mdl_tot <= 20) |> # Filtra os top 20 no ranking geral de medalhas
+  arrange(rank_ger_mdl_tot) |> # Ordena pelo ranking geral de medalhas
+  select(NOC,rank_ger_mdl_tot,reg,ger_mdl_tot,ger_esportes_diferentes,ger_mdl_score,reg) |> # Seleciona as colunas relevantes
+  distinct() # Remove duplicatas
+
+ggplot(visual, aes(x = reorder(reg, ger_mdl_tot), y = ger_mdl_tot)) + # Cria gráfico de barras ordenado pelo total de medalhas
+  geom_bar(stat = "identity", fill = scales::gradient_n_pal(c("gold",'#C0C0C0', "#CD7F32"))(seq(0, 1, length.out = nrow(visual)))) + # Define as cores das barras
+  geom_text(aes(label = round(ger_mdl_tot)), vjust = 0.5, hjust = 1.25, size = 4, fontface = "bold") + # Adiciona texto às barras
+  coord_flip() + # Inverte os eixos
+  theme_minimal() + # Aplica tema minimalista
+  theme(
+    axis.title.x = element_blank(), # Remove título do eixo x
+    axis.title.y = element_blank(), # Remove título do eixo y
+    axis.text.x = element_blank(), # Remove texto do eixo x
+    axis.ticks.x = element_blank(), # Remove ticks do eixo x
+    axis.text.y = element_text(size = 10, face = "bold"),  # Ajusta texto do eixo y
+    panel.grid = element_blank(), # Remove grid
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5)  # Ajusta título
+  ) +
+  labs(title = "") # Define título
+
+
+
+}
+```
+
+É interessante que nosso imaginário nos indique que os EUA seriam o país mais vitorioso, e isso se comprova no gráfico, onde há uma grande superioridade, possuindo mais que o dobro de medalhas da segunda colocada, Rússia. Em seguida, vêm países tradicionais como Austrália, Alemanha, França, Itália e Reino Unido, com predomínio da Europa. No gráfico, os países fora desse continente que também figuram no topo são Canadá, Brasil, China, Argentina, Cuba e Jamaica.
+
+É importante ressaltar que atletas da Rússia poderão participar das Olimpíadas de 2024 em Paris, mas sob condições rigorosas. Eles competirão como 'atletas neutros individuais', sem representar oficialmente a Rússia, ou seja, não poderão usar a bandeira, o hino ou as cores nacionais. Essa decisão foi tomada pelo Comitê Olímpico Internacional (COI) após a invasão da Ucrânia pela Rússia. Apenas um número muito limitado de atletas que não apoiem ativamente a guerra e que não estejam contratualmente vinculados ao exército russo ou bielorrusso será elegível para competir.
+
+Nesse visual, abordamos quais países em valores absolutos possuem maior domínio olímpico. Mas será que isso se repete quando pensamos em termos de aproveitamento de medalhas, considerando a proporção de medalhas ganhas pelo total de atletas que participaram das modalidades? Em seguida, temos um visual que mostra os países com maior aproveitamento. Um detalhe é que, para essa análise, separamos apenas os países que participaram de pelo menos 10 esportes distintos, atribuindo uma faixa de corte visando a diversidade esportiva.
+
+### Quais os países têm maior aproveitamento de medalhas? {.justify}
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+
+{
+visual  = sel |> 
+  filter(ger_esportes_diferentes >= 10) |> # Filtra para esportes diferentes >= 10
+  arrange(rank_ger_mdl_aproveitamento) |> # Ordena pelo ranking de aproveitamento de medalhas
+  select(reg,ger_mdl_tot,ger_mdl_aproveitamento,ger_esportes_diferentes) |> # Seleciona as colunas relevantes
+  distinct() |> # Remove duplicatas
+  head(20) # Seleciona os top 15
+
+
+ggplot(visual, aes(x = reorder(reg, ger_mdl_aproveitamento), y = ger_mdl_aproveitamento)) + # Cria gráfico de barras ordenado pelo aproveitamento de medalhas
+  geom_bar(stat = "identity", fill = scales::gradient_n_pal(c("gold4", "gold1"))(seq(0, 1, length.out = nrow(visual)))) + # Define as cores das barras
+  geom_text(aes(label = paste0(round(ger_mdl_aproveitamento*100),'%')), vjust = 0.5, hjust = 1.25, size = 4, fontface = "bold",color = 'white') + # Adiciona texto às barras
+  coord_flip() + # Inverte os eixos
+  theme_minimal() + # Aplica tema minimalista
+  theme(
+    axis.title.x = element_blank(), # Remove título do eixo x
+    axis.title.y = element_blank(), # Remove título do eixo y
+    axis.text.x = element_blank(), # Remove texto do eixo x
+    axis.ticks.x = element_blank(), # Remove ticks do eixo x
+    axis.text.y = element_text(size = 10, face = "bold"), # Ajusta texto do eixo y
+    panel.grid = element_blank(), # Remove grid
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5)  # Ajusta título
+  ) +
+  labs(title = "") # Define título
+
+
+}
+
+```
+
+Como podemos perceber, a seleção americana segue no topo, também nesse critério, com um aproveitamento de 32% das medalhas disputadas. Porém, note que a diferença para os demais colocados é menor que no total de medalhas, mostrando um maior equilíbrio no topo. Um destaque interessante é a segunda colocada, Sérvia, que não aparece no visual anterior, mas tem um alto aproveitamento na disputa das medalhas. Outros países em seguida que 'não entram para perder' são a Holanda, China, Rússia, Noruega, Dinamarca, Austrália, Cuba e Alemanha, completando o top 10.
+
+E se olharmos agora por uma ótica onde criaremos um score, dando 50%, 30% e 10% de peso sobre o total de medalhas de ouro, prata e bronze, respectivamente, com o objetivo de verificar se alguns países sobem no ranking geral pela qualidade das medalhas conquistadas?
+
+### Nações com maiores scores de medalhas {.justify}
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+
+visual <- sel |> 
+  arrange(-ger_mdl_score) |> # Ordena pelo score de medalhas
+  select(NOC, reg, ger_mdl_score, ger_mdl_aproveitamento, ger_mdl_tot) |> # Seleciona as colunas relevantes
+  distinct() |> # Remove duplicatas
+  head(20) |> # Seleciona os top 20
+  mutate(
+    iso2 = tolower(countrycode(reg, "country.name", "iso2c")), # Converte nomes de países para códigos ISO2
+    color = case_when(
+      row_number() == 1 ~ "gold", # Cor para o 1º lugar
+      row_number() == 2 ~ "#C0C0C0", # Cor para o 2º lugar
+      row_number() == 3 ~ "#CD7F32", # Cor para o 3º lugar
+      TRUE ~ "#E0E0E0" # Cor para os demais
+    )
+  )
+
+ggplot(visual, aes(x = reorder(reg, ger_mdl_score), y = ger_mdl_score)) + # Cria gráfico de barras ordenado pelo score de medalhas
+  geom_bar(stat = "identity", aes(fill = color)) + # Define as cores das barras
+  geom_text(aes(label = round(ger_mdl_score)), vjust = 0.5, hjust = 1.25, size = 4, fontface = "bold") + # Adiciona texto às barras
+  coord_flip() + # Inverte os eixos
+  theme_minimal() + # Aplica tema minimalista
+  theme(
+    axis.title.x = element_blank(), # Remove título do eixo x
+    axis.title.y = element_blank(), # Remove título do eixo y
+    axis.text.x = element_blank(), # Remove texto do eixo x
+    axis.ticks.x = element_blank(), # Remove ticks do eixo x
+    axis.text.y = element_text(size = 10, face = "bold"),  # Ajusta texto do eixo y
+    panel.grid = element_blank(), # Remove grid
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5)  # Ajusta título
+  ) +
+  labs(title = "") + # Define título
+  scale_fill_identity() # Aplica as cores definidas manualmente
+
+```
+
+Em comparação com o primeiro visual, vemos que as nações que obtiveram um maior salto a partir da qualidade das medalhas no ranking foram a China e o Reino Unido. Em relação aos três primeiros colocados, nada mudou.
+
+Expandindo um pouco nosso olhar além do contexto geral, podemos nos perguntar quais nações mais dominam cada esporte. Uma pergunta que podemos levantar é sobre os países que têm mais tradição em um só esporte. Costumamos dizer que o Brasil é o país do futebol, mas e nas Olimpíadas, quais países são mais tradicionais dentro dos esportes que disputam?
+
+### Países com Maior Tradição em um Esporte {.justify}
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+
+{
+visual  = sel |> 
+  arrange(-prop_mdl_p_esporte) |> # Ordena pela proporção de medalhas por esporte
+  select(Sport,reg,prop_mdl_p_esporte,mdl_tot) |> # Seleciona as colunas relevantes
+  filter(mdl_tot >= 5) |> # Filtra para total de medalhas >= 5
+  head(20) # Seleciona os top 20
+
+
+unique(visual$Sport) # Mostra os valores únicos da coluna Sport
+
+cores_esporte <- c(
+  "Athletics" = "#FF4500",  # Cor para Athletics
+  "Football" = "#008000",   # Cor para Football
+  "Swimming" = "#1E90FF",   # Cor para Swimming
+  "Ice Hockey" = "#4682B4", # Cor para Ice Hockey
+  "Hockey" = "#FFD700",     # Cor para Hockey
+  "Rowing" = "#8B4513",     # Cor para Rowing
+  "Alpine Skiing" = "#A52A2A", # Cor para Alpine Skiing
+  "Water Polo" = "#00CED1",  # Cor para Water Polo
+  "Wrestling" = "#DC143C"    # Cor para Wrestling
+)
+
+ggplot(visual, aes(x = reorder(reg, prop_mdl_p_esporte), y = prop_mdl_p_esporte, fill = Sport)) + # Cria gráfico de barras ordenado pela proporção de medalhas por esporte
+  geom_bar(stat = "identity") + # Define o tipo de gráfico
+  geom_text(aes(label = paste0(round(prop_mdl_p_esporte * 100), '%')), vjust = 0.5, hjust = 1.25, size = 4, fontface = "bold",color = 'white') + # Adiciona texto às barras
+  coord_flip() + # Inverte os eixos
+  scale_fill_manual(values = cores_esporte) +  # Configura as cores manualmente
+  theme_minimal() + # Aplica tema minimalista
+  theme(
+    axis.title.x = element_blank(), # Remove título do eixo x
+    axis.title.y = element_blank(), # Remove título do eixo y
+    axis.text.x = element_blank(), # Remove texto do eixo x
+    axis.ticks.x = element_blank(), # Remove ticks do eixo x
+    axis.text.y = element_text(size = 10, face = "bold"),  # Ajusta texto do eixo y
+    panel.grid = element_blank(), # Remove grid
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5)  # Ajusta título
+  ) +
+  labs(title = "") # Define título
+
+}
+```
+
+É relevante destacar que, para esse visual, consideramos apenas os países que têm no mínimo 5 medalhas conquistadas no esporte. Podemos visualizar que alguns países têm 100% das medalhas conquistadas neste século em apenas um esporte, como Marrocos, Quênia, Jamaica, Etiópia e Bahamas no Atletismo; Paraguai e Camarões no Futebol (como são esportes coletivos de no mínimo 11 jogadores titulares, a quantidade de medalhas conquistadas favorece esses países); e, por fim, Zimbábue na Natação. Assim, podemos dizer que são países 'especialistas' nesses esportes.
+
+Dito isso, e se agora quisermos ver quais países de fato têm mais medalhas por esporte? É o que mostramos a seguir.
+
+### Países com mais medalhas por esporte {.justify}
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+visual = sel |>
+  filter(reg != 'NA') |>
+  filter(rank_mdl_tot <= 3) |> # Filtra os top 3 no ranking de total de medalhas
+  arrange(Sport,rank_mdl_tot) |> # Ordena por Sport e ranking de total de medalhas
+  select(NOC,Sport,rank_mdl_tot,reg,mdl_tot) |> # Seleciona as colunas relevantes
+  mutate(
+    color = case_when(
+      rank_mdl_tot <= 1.5 ~ "gold", # Cor para o 1º lugar
+      rank_mdl_tot <= 2.5 ~ "#C0C0C0", # Cor para o 2º lugar
+      rank_mdl_tot <= 3.5 ~ "#CD7F32", # Cor para o 3º lugar
+      TRUE ~ "#E0E0E0" # Cor para os demais
+    )
+  )
+
+
+#length(unique(visual$Sport)) # Conta os valores únicos da coluna Sport
+
+
+visual$reg <- tidytext::reorder_within(visual$reg, visual$mdl_tot, visual$Sport) # Reordena dentro de cada esporte
+
+sports = visual |> group_by(Sport) |> summarise(s = sum(mdl_tot)) |> arrange(-s) |> select(Sport) |> pull()
+
+visual1 = visual[visual$Sport %in% sports[1:9],] # Filtra os primeiros 18 esportes
+visual2 = visual[visual$Sport %in% sports[10:18],] # Filtra os próximos 18 esportes
+visual3 = visual[visual$Sport %in% sports[19:27],] # Filtra os últimos esportes
+visual4 = visual[visual$Sport %in% sports[28:36],] # Filtra os últimos esportes
+visual5 = visual[visual$Sport %in% sports[37:45],] # Filtra os últimos esportes
+visual6 = visual[visual$Sport %in% sports[46:54],] # Filtra os últimos esportes
+
+
+library(tidytext) # Carrega o pacote tidytext
+
+ggplot(visual1, aes(x = reorder(reg,mdl_tot), y = mdl_tot)) + # Cria gráfico de barras ordenado pelo total de medalhas
+  geom_bar(stat = "identity", aes(fill = color)) + # Define o tipo de gráfico e as cores
+  geom_text(aes(label = round(mdl_tot)), vjust = 0.5, hjust = 1, size = 4, fontface = "bold") + # Adiciona texto às barras
+  coord_flip() + # Inverte os eixos
+  theme_minimal() + # Aplica tema minimalista
+  theme(
+    axis.title.x = element_blank(), # Remove título do eixo x
+    axis.title.y = element_blank(), # Remove título do eixo y
+    axis.text.x = element_blank(), # Remove texto do eixo x
+    axis.ticks.x = element_blank(), # Remove ticks do eixo x
+    axis.text.y = element_text(size = 10, face = "bold"),  # Ajusta texto do eixo y
+    panel.grid = element_blank(), # Remove grid
+    plot.title = element_text(size = 0, face = "bold", hjust = 0.5),# Ajusta título
+    strip.text = element_text(size = 8.5, face = "bold", color = "black")  # Ajusta título do facet
+  ) +
+  labs(title = "") + # Define título
+  scale_fill_identity()+ # Aplica as cores definidas manualmente
+  tidytext::scale_x_reordered() +  # Ajusta etiquetas do eixo x
+  facet_wrap(~Sport, scales = "free_y") # Facet wrap por esporte com escalas livres no eixo y
+
+```
+
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+ggplot(visual2, aes(x = reorder(reg,mdl_tot), y = mdl_tot)) + # Cria gráfico de barras ordenado pelo total de medalhas
+  geom_bar(stat = "identity", aes(fill = color)) + # Define o tipo de gráfico e as cores
+  geom_text(aes(label = round(mdl_tot)), vjust = 0.5, hjust = 1, size = 4, fontface = "bold") + # Adiciona texto às barras
+  coord_flip() + # Inverte os eixos
+  theme_minimal() + # Aplica tema minimalista
+  theme(
+    axis.title.x = element_blank(), # Remove título do eixo x
+    axis.title.y = element_blank(), # Remove título do eixo y
+    axis.text.x = element_blank(), # Remove texto do eixo x
+    axis.ticks.x = element_blank(), # Remove ticks do eixo x
+    axis.text.y = element_text(size = 10, face = "bold"),  # Ajusta texto do eixo y
+    panel.grid = element_blank(), # Remove grid
+    plot.title = element_text(size = 0, face = "bold", hjust = 0.5),# Ajusta título
+    strip.text = element_text(size = 8.5, face = "bold", color = "black")  # Ajusta título do facet
+  ) +
+  labs(title = "") + # Define título
+  scale_fill_identity()+ # Aplica as cores definidas manualmente
+  tidytext::scale_x_reordered() +  # Ajusta etiquetas do eixo x
+  facet_wrap(~Sport, scales = "free_y") # Facet wrap por esporte com escalas livres no eixo y
+
+```
+
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+ggplot(visual3, aes(x = reorder(reg,mdl_tot), y = mdl_tot)) + # Cria gráfico de barras ordenado pelo total de medalhas
+  geom_bar(stat = "identity", aes(fill = color)) + # Define o tipo de gráfico e as cores
+  geom_text(aes(label = round(mdl_tot)), vjust = 0.5, hjust = 1, size = 4, fontface = "bold") + # Adiciona texto às barras
+  coord_flip() + # Inverte os eixos
+  theme_minimal() + # Aplica tema minimalista
+  theme(
+    axis.title.x = element_blank(), # Remove título do eixo x
+    axis.title.y = element_blank(), # Remove título do eixo y
+    axis.text.x = element_blank(), # Remove texto do eixo x
+    axis.ticks.x = element_blank(), # Remove ticks do eixo x
+    axis.text.y = element_text(size = 10, face = "bold"),  # Ajusta texto do eixo y
+    panel.grid = element_blank(), # Remove grid
+    plot.title = element_text(size = 0, face = "bold", hjust = 0.5),# Ajusta título
+    strip.text = element_text(size = 8, face = "bold", color = "black")  # Ajusta título do facet
+  ) +
+  labs(title = "") + # Define título
+  scale_fill_identity()+ # Aplica as cores definidas manualmente
+  tidytext::scale_x_reordered() +  # Ajusta etiquetas do eixo x
+  facet_wrap(~Sport, scales = "free_y") # Facet wrap por esporte com escalas livres no eixo y
+
+```
+
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+ggplot(visual4, aes(x = reorder(reg,mdl_tot), y = mdl_tot)) + # Cria gráfico de barras ordenado pelo total de medalhas
+  geom_bar(stat = "identity", aes(fill = color)) + # Define o tipo de gráfico e as cores
+  geom_text(aes(label = round(mdl_tot)), vjust = 0.5, hjust = 1, size = 4, fontface = "bold") + # Adiciona texto às barras
+  coord_flip() + # Inverte os eixos
+  theme_minimal() + # Aplica tema minimalista
+  theme(
+    axis.title.x = element_blank(), # Remove título do eixo x
+    axis.title.y = element_blank(), # Remove título do eixo y
+    axis.text.x = element_blank(), # Remove texto do eixo x
+    axis.ticks.x = element_blank(), # Remove ticks do eixo x
+    axis.text.y = element_text(size = 10, face = "bold"),  # Ajusta texto do eixo y
+    panel.grid = element_blank(), # Remove grid
+    plot.title = element_text(size = 0, face = "bold", hjust = 0.5),# Ajusta título
+    strip.text = element_text(size = 8.5, face = "bold", color = "black")  # Ajusta título do facet
+  ) +
+  labs(title = "") + # Define título
+  scale_fill_identity()+ # Aplica as cores definidas manualmente
+  tidytext::scale_x_reordered() +  # Ajusta etiquetas do eixo x
+  facet_wrap(~Sport, scales = "free_y") # Facet wrap por esporte com escalas livres no eixo y
+
+```
+
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+ggplot(visual5, aes(x = reorder(reg,mdl_tot), y = mdl_tot)) + # Cria gráfico de barras ordenado pelo total de medalhas
+  geom_bar(stat = "identity", aes(fill = color)) + # Define o tipo de gráfico e as cores
+  geom_text(aes(label = round(mdl_tot)), vjust = 0.5, hjust = 1, size = 4, fontface = "bold") + # Adiciona texto às barras
+  coord_flip() + # Inverte os eixos
+  theme_minimal() + # Aplica tema minimalista
+  theme(
+    axis.title.x = element_blank(), # Remove título do eixo x
+    axis.title.y = element_blank(), # Remove título do eixo y
+    axis.text.x = element_blank(), # Remove texto do eixo x
+    axis.ticks.x = element_blank(), # Remove ticks do eixo x
+    axis.text.y = element_text(size = 10, face = "bold"),  # Ajusta texto do eixo y
+    panel.grid = element_blank(), # Remove grid
+    plot.title = element_text(size = 0, face = "bold", hjust = 0.5),# Ajusta título
+    strip.text = element_text(size = 8.5, face = "bold", color = "black")  # Ajusta título do facet
+  ) +
+  labs(title = "") + # Define título
+  scale_fill_identity()+ # Aplica as cores definidas manualmente
+  tidytext::scale_x_reordered() +  # Ajusta etiquetas do eixo x
+  facet_wrap(~Sport, scales = "free_y") # Facet wrap por esporte com escalas livres no eixo y
+
+```
+
+
+No primeiro gráfico, dentro do bloco de esportes com mais volume de medalhas distribuídas, temos a seleção americana liderando 4 dos 9 esportes destacados: Atletismo, Basquete, Hóquei no Gelo e Natação. Outro destaque é a Austrália, que fica com a simbólica medalha de prata em 4 esportes. Além da Etiópia, que figurou no ranking das seleções com mais tradição em um só esporte, resultando no pódio geral no Atletismo.
+
+Nos demais visuais, conseguimos ver nossa seleção liderando o Vôlei de Praia e o Vôlei de Quadra. Alguns países que me surpreenderam, por não estarem nos rankings gerais de medalhas e também por não conhecer todas as culturas e esportes, foram:
+
+- Taiwan e México liderando no Taekwondo
+- Suíça à frente no Trenó (bobsleigh)
+- Áustria dominando no Esqui Alpino
+- Coreia do Sul em primeiro na Patinação de Velocidade em Pista Curta
+
+A maioria dessas 'surpresas' realmente tem viés de não conhecimento cultural e/ou dos esportes.
+
+
+### Quais os países com maior integração das mulheres no esporte? (considerando as nações que possuem mais de 20 atletas) {.justify}
+```{r}
+
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+{
+visual = sel |> 
+  arrange(-ger_prop_f) |> # Ordena pela proporção de atletas femininas
+  select(NOC,reg,ger_mdl_tot,ger_qtd_atletas_f,ger_prop_f,ger_qtd_atletas_m) |> # Seleciona as colunas relevantes
+  filter(ger_qtd_atletas_f+ger_qtd_atletas_m >= 20) |> # Filtra para total de atletas >= 20
+  distinct() |> # Remove duplicatas
+  head(25) # Seleciona os top 20
+
+sel |> 
+  arrange(-ger_prop_f) |> # Ordena pela proporção de atletas femininas
+  select(NOC,reg,ger_mdl_tot,ger_qtd_atletas_f,ger_prop_f,ger_qtd_atletas_m) |> # Seleciona as colunas relevantes
+  filter(ger_qtd_atletas_f+ger_qtd_atletas_m >= 20) |> # Filtra para total de atletas >= 20
+  distinct() |> # Remove duplicatas
+  head(25) # Seleciona os top 20
+
+visual[,c('ger_prop_f','NOC','reg')]
+
+ggplot(visual, aes(x = reorder(paste0(reg,' | ',NOC), ger_prop_f), y = ger_prop_f)) + # Cria gráfico de barras ordenado pela proporção de atletas femininas
+  geom_bar(stat = "identity", fill = scales::gradient_n_pal(c("deeppink", "pink", "lightpink" ))(seq(0, 1, length.out = nrow(visual)))) + # Define as cores das barras
+  geom_text(aes(label = paste0(round(ger_prop_f*100,1),'%')), vjust = 0.5, hjust = 1.25, size = 3.5, fontface = "bold") + # Adiciona texto às barras
+  coord_flip() + # Inverte os eixos
+  theme_minimal() + # Aplica tema minimalista
+  theme(
+    axis.title.x = element_blank(), # Remove título do eixo x
+    axis.title.y = element_blank(), # Remove título do eixo y
+    axis.text.x = element_blank(), # Remove texto do eixo x
+    axis.ticks.x = element_blank(), # Remove ticks do eixo x
+    axis.text.y = element_text(size = 10, face = "bold"),  # Ajusta texto do eixo y
+    panel.grid = element_blank(), # Remove grid
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5)  # Ajusta título
+  ) +
+  labs(title = "") # Define título
+
+}
+```
+Podemos ver que as nações que possuem mais representantes femininas neste século, de maneira bem predominante, são Coreia do Norte, Zimbábue, Angola, Bahamas e Panamá, com mais de 60% de representação. As nações líderes na participação feminina vêm do continente asiático e africano. Tomando como base uma proporção entre 45% e 55%, podemos classificar como um intervalo de equilíbrio entre os sexos. Assim, temos logo em sequência países que conseguem ter ambos os sexos sendo representados de forma semelhante.  Um destaque curioso vai para Israel, que possui essa representatividade exatamente igual. A pergunta que fica é: qual é o fundo do iceberg desse visual?
+
+### Países com menor participação de mulheres {.justify}
+```{r}
+#| fig-align: center
+#| echo: true
+#| warning: false
+#| message: false
+
+{
+visual = sel |> 
+  arrange(ger_prop_f) |> # Ordena pela proporção de atletas femininas
+  select(NOC,reg,ger_mdl_tot,ger_qtd_atletas_f,ger_prop_f,ger_qtd_atletas_m) |> # Seleciona as colunas relevantes
+  filter(ger_qtd_atletas_f+ger_qtd_atletas_m >= 20) |> # Filtra para total de atletas >= 20
+  distinct() |> # Remove duplicatas
+  head(25) # Seleciona os top 20
+
+ggplot(visual, aes(x = reorder(paste0(reg,' | ',NOC), -ger_prop_f), y = ger_prop_f)) + # Cria gráfico de barras ordenado pela proporção de atletas femininas
+  geom_bar(stat = "identity", fill = scales::gradient_n_pal(c("lightpink", "pink", "deeppink" ))(seq(0, 1, length.out = nrow(visual)))) + # Define as cores das barras
+  geom_text(aes(label = paste0(round(ger_prop_f*100,1),'%')), vjust = 0.5, hjust = 1.25, size = 3.5, fontface = "bold") + # Adiciona texto às barras
+  coord_flip() + # Inverte os eixos
+  theme_minimal() + # Aplica tema minimalista
+  theme(
+    axis.title.x = element_blank(), # Remove título do eixo x
+    axis.title.y = element_blank(), # Remove título do eixo y
+    axis.text.x = element_blank(), # Remove texto do eixo x
+    axis.ticks.x = element_blank(), # Remove ticks do eixo x
+    axis.text.y = element_text(size = 10, face = "bold"),  # Ajusta texto do eixo y
+    panel.grid = element_blank(), # Remove grid
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5)  # Ajusta título
+  ) +
+  labs(title = "") # Define título
+
+}
+```
+Por outro lado, temos muitos países que possuem enorme desigualdade, onde o top 25 com mais 'igualdade' possui 25% de mulheres representantes. No fundo do iceberg, liderando essa estatística, estão Paquistão, Arábia Saudita, Kuwait e Bósnia, com menos de 10% de representatividade.
+
+# Referências {.justify}
+
+- [Base de Dados | Olympic Data](https://www.kaggle.com/datasets/bhanupratapbiswas/olympic-data)
+
+
+
+
+
+
+
+
+
+
+
